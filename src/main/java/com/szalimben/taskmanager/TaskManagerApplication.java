@@ -21,7 +21,7 @@ public class TaskManagerApplication {
 
 	@PostConstruct
 	public void exampleProjects() {
-		projectService.saveProject(new Project("Manhattan Project", LocalDate.now()));
+//		projectService.saveProject(new Project("Manhattan Project", LocalDate.now()));
 	}
 
 }

@@ -2,8 +2,13 @@ package com.szalimben.taskmanager.domain;
 
 import java.time.LocalDate;
 import java.util.Random;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Project
@@ -12,6 +17,11 @@ public class Project
     private Long id;
     private String name;
     private LocalDate dateCreated;
+
+    // A Project can have 0 or more tasks:
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "project_id")
+    private Set<Task> tasks;
 
     public Project()
     {
@@ -59,6 +69,41 @@ public class Project
     public void setDateCreated(LocalDate dateCreated)
     {
         this.dateCreated = dateCreated;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+
+        Project other = (Project) obj;
+        if (dateCreated == null) {
+            if (other.dateCreated != null) {
+                return false;
+            }
+        } else if (!dateCreated.equals(other.dateCreated)) {
+            return false;
+        }
+        if (id == null) {
+            if (other.id != null) {
+                return false;
+            }
+        } else if (!id.equals(other.id)) {
+            return false;
+        }
+        if (name == null) {
+            return other.name == null;
+        } else {
+            return name.equals(other.name);
+        }
     }
 
     @Override

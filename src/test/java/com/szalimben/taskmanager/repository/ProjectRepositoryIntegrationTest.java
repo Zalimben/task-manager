@@ -1,12 +1,12 @@
 package com.szalimben.taskmanager.repository;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import com.szalimben.taskmanager.domain.Project;
@@ -18,19 +18,44 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class ProjectRepositoryIntegrationTest
 {
     @Autowired
-    IProjectRepository iProjectRepository;
+    IProjectRepository projectRepository;
 
     @Test
-    void saveProject() {
+    void saveProject()
+    {
         Project newProject = new Project("New Project", LocalDate.now());
-        assertThat( iProjectRepository.save(newProject), is(notNullValue()));
+        assertThat(projectRepository.save(newProject), is(notNullValue()));
     }
 
     @Test
-    void saveExistingProjectTest() {
+    void saveExistingProjectTest()
+    {
         Project newProject = new Project("Save Existing Project", LocalDate.now());
-        iProjectRepository.save(newProject);
-        Optional<Project> storedProject = iProjectRepository.findById(newProject.getId());
-        assertEquals( storedProject.get().getId(), newProject.getId());
+        projectRepository.save(newProject);
+        Optional<Project> storedProject = projectRepository.findById(newProject.getId());
+        assertEquals(storedProject.get().getId(), newProject.getId());
+    }
+
+    @Test
+    void findByNameTest()
+    {
+        Project newProject = new Project("Manhattam Project", LocalDate.now());
+        projectRepository.save(newProject);
+        Optional<Project> savedProject = projectRepository.findByName(newProject.getName());
+        assertEquals(savedProject.get(), newProject);
+    }
+
+    @Test
+    void findByDateTest()
+    {
+        Project newProject = new Project("New Project A", LocalDate.now().minusDays(5));
+        projectRepository.save(newProject);
+        newProject = new Project("New Project B", LocalDate.now().minusYears(12));
+        projectRepository.save(newProject);
+        newProject = new Project("New Project C", LocalDate.now().minusYears(5));
+        projectRepository.save(newProject);
+
+        List<Project> savedProjects = projectRepository.findByDateCreatedBetween(LocalDate.now().minusDays(8), LocalDate.now().minusDays(3));
+        assertEquals(savedProjects.size(), 1);
     }
 }
